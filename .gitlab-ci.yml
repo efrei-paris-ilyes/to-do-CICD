@@ -1,0 +1,36 @@
+stages:
+  - test
+  - prod
+
+.build_job:
+  script:
+    - docker build -t $ENV .
+  tags:
+    - shell
+
+.deploy_job:
+  script:
+    - docker run p $PORT:8080 $ENV 
+  tags:
+    - shell
+
+Test deployment:
+  extends: 
+    - .build_job
+    - .deploy_job
+  stage: test
+  variables:
+    - ENV: test
+    - PORT: 1000
+  when: manual
+    
+
+Prod deployment:
+  extends: 
+    - .build_job
+    - .deploy_job
+  stage: prod
+   variables:
+    - ENV: prod
+    - PORT: 2000
+  when: manual
